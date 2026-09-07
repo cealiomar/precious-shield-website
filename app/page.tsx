@@ -521,7 +521,10 @@ export default function Home() {
             </span>
           </div>
           <div className="closing-main">
-            <MotionHeading lines={['استمتع بالطريق.', 'واترك الحماية لنا.']} />
+            <h2 className="closing-headline">
+              <span>حماية مدروسة.</span>
+              <span>جمال يدوم.</span>
+            </h2>
             <a
               href="https://wa.me/19406194638"
               target="_blank"
@@ -533,7 +536,6 @@ export default function Home() {
             </a>
           </div>
           <div className="closing-bottom">
-            <span>حماية مدروسة. جمال يدوم.</span>
             <div className="contact-links">
               <a
                 className="text-link"
