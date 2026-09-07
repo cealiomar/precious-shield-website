@@ -23,6 +23,49 @@ export function ScrollWords({ children }: { children: string }) {
   );
 }
 
+export function MotionHeading({
+  lines,
+  className = '',
+}: {
+  lines: string[];
+  className?: string;
+}) {
+  let wordIndex = 0;
+  return (
+    <h2 className={`motion-heading reveal ${className}`}>
+      <span className="sr-only">{lines.join(' ')}</span>
+      {lines.map((line) => (
+        <span key={line} className="motion-line" aria-hidden="true">
+          {line.split(' ').map((word, index) => {
+            const delay = wordIndex++ * 65;
+            return (
+              <span className="motion-word-mask" key={`${word}-${index}`}>
+                <span
+                  className="motion-word"
+                  style={{ transitionDelay: `${delay}ms` }}
+                >
+                  {word}
+                </span>{' '}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </h2>
+  );
+}
+
+export function HoverLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rolling-label">
+      <span className="rolling-primary">{children}</span>
+      <span className="rolling-copy" aria-hidden="true">
+        {children}
+      </span>
+    </span>
+  );
+}
+
 /** Native scrolling stays in control; only visual layers respond to position. */
 export function ScrollExperience() {
   useEffect(() => {

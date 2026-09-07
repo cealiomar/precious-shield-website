@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ScrollExperience, ScrollWords } from './scroll-experience';
+import {
+  ScrollExperience,
+  ScrollWords,
+  MotionHeading,
+  HoverLabel,
+} from './scroll-experience';
 import Image from 'next/image';
 import {
   ArrowDown,
@@ -155,7 +160,7 @@ export default function Home() {
         <nav className="desktop-nav" aria-label="التنقل الرئيسي">
           {links.map((link) => (
             <a key={link.href} href={link.href}>
-              {link.label}
+              <HoverLabel>{link.label}</HoverLabel>
             </a>
           ))}
           <a
@@ -172,7 +177,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          تواصل معنا <ArrowUpLeft size={17} />
+          <HoverLabel>تواصل معنا</HoverLabel> <ArrowUpLeft size={17} />
         </a>
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger className="mobile-menu" aria-label="فتح القائمة">
@@ -248,7 +253,8 @@ export default function Home() {
                 أفلام حماية الطلاء من Precious Shield.
               </p>
               <a className="primary-button" href="#protection">
-                اكتشف عالم الحماية <ArrowDownLeft size={21} />
+                <HoverLabel>اكتشف عالم الحماية</HoverLabel>{' '}
+                <ArrowDownLeft size={21} />
               </a>
             </div>
             <div className="hero-echo" aria-hidden="true">
@@ -314,7 +320,8 @@ export default function Home() {
                 الحفاظ على جمال الطلاء.
               </p>
               <a className="text-link" href="#finishes">
-                اكتشف التشطيب المناسب لك <ArrowUpLeft size={19} />
+                <HoverLabel>اكتشف التشطيب المناسب لك</HoverLabel>{' '}
+                <ArrowUpLeft size={19} />
               </a>
             </div>
           </div>
@@ -361,12 +368,8 @@ export default function Home() {
               SIX CHOICES. ONE STANDARD.
             </span>
           </div>
-          <div className="finish-heading reveal">
-            <h2>
-              ستة اختيارات.
-              <br />
-              معيار واحد.
-            </h2>
+          <div className="finish-heading">
+            <MotionHeading lines={['ستة اختيارات.', 'معيار واحد.']} />
             <p>
               من اللمعان الصافي إلى الساتان واللون.
               <br />
@@ -444,7 +447,8 @@ export default function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    استفسر عن {finish.name} <ArrowUpLeft size={18} />
+                    <HoverLabel>استفسر عن {finish.name}</HoverLabel>{' '}
+                    <ArrowUpLeft size={18} />
                   </a>
                 </div>
               </TabsContent>
@@ -479,11 +483,7 @@ export default function Home() {
                   <span className="red-line" />
                   03 / عناية بالتفاصيل
                 </p>
-                <h2>
-                  الفارق في
-                  <br />
-                  آخر مليمتر.
-                </h2>
+                <MotionHeading lines={['الفارق في', 'آخر مليمتر.']} />
                 <p className="craft-lead">
                   الحماية الجيدة تبدأ قبل تركيب الفيلم.
                   <br />
@@ -527,12 +527,8 @@ export default function Home() {
               PROTECT WHAT MOVES YOU.
             </span>
           </div>
-          <div className="closing-main reveal">
-            <h2>
-              استمتع بالطريق.
-              <br />
-              <span>واترك الحماية لنا.</span>
-            </h2>
+          <div className="closing-main">
+            <MotionHeading lines={['استمتع بالطريق.', 'واترك الحماية لنا.']} />
             <a
               href="https://wa.me/19406194638"
               target="_blank"
@@ -552,7 +548,8 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                تواصل على واتساب <ArrowUpLeft size={18} />
+                <HoverLabel>تواصل على واتساب</HoverLabel>{' '}
+                <ArrowUpLeft size={18} />
               </a>
               <a
                 className="text-link"
@@ -560,7 +557,7 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                تحقّق من ضمانك <ArrowUpLeft size={18} />
+                <HoverLabel>تحقّق من ضمانك</HoverLabel> <ArrowUpLeft size={18} />
               </a>
             </div>
           </div>
