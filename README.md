@@ -33,7 +33,7 @@ The full starter lint command also checks bundled UI components and may report p
 - `app/page.tsx` — page content, products, warranties, navigation, and contact links.
 - `app/globals.css` — visual design, responsive layout, and interaction styles.
 - `app/scroll-experience.tsx` — scroll effects and animated text components.
-- `app/installation-video.tsx` — silent installation video, viewport playback, manual pause and reduced-motion handling.
+- `app/installation-video.tsx` — lazy-loaded YouTube installation film with native playback and source attribution.
 - `lib/scroll-progress.ts` — progress calculations for scroll scenes.
 - `public/images/products/` — the six transparent vehicle images.
 - `public/fonts/` — locally hosted Arabic fonts.
@@ -49,4 +49,4 @@ GitHub Actions builds and publishes the site on every push to `main`. Run `npm r
 
 Vehicle artwork is illustrative CGI. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.
 
-The installation clip in `public/videos/ppf-installation.mp4` is an AI-generated illustrative animation derived from the existing `craft.png` artwork, not footage of an actual customer installation. It is presented without audio or CSS image filters. Playback pauses outside the viewport and when the document is hidden; reduced-motion and save-data preferences disable automatic playback. The original image remains as the poster and error fallback.
+The installation section embeds [Areté Auto Salon’s Porsche GT3 film](https://www.youtube.com/watch?v=IQqFJy0QhR4) through YouTube’s privacy-enhanced player, starting at the installation footage (1:10). The publisher advertises the original in 4K; YouTube selects playback quality based on the viewer’s device and connection. Native controls and fullscreen remain available. The player loads lazily and does not autoplay. The footage is credited as an external illustration, not a Precious Shield customer installation. No video is downloaded, rehosted, filtered, stretched, or cropped. A direct YouTube link remains available if embedding is blocked. The previous generated MP4 has been removed.

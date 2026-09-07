@@ -463,12 +463,6 @@ export default function Home() {
           <div className="craft-stage">
             <div className="craft-photo craft-photo--video">
               <InstallationVideo />
-              <div className="craft-photo-caption">
-                <span className="english-label" dir="ltr">
-                  PRECISION IN EVERY DETAIL.
-                </span>
-                <span className="small-cross">+</span>
-              </div>
             </div>
             <div className="craft-content section-pad">
               <div>
