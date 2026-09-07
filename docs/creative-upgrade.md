@@ -7,7 +7,7 @@ npm ci
 npm run build:pages
 ```
 
-The comparison now uses two distinct glossy/matte concept images of the same graphite car. The native range exposes the glossy left side and matte right side, with three labelled presets. It is described as a finish visualization, not a before/after protection result. Asset paths are in `lib/comparison-assets.ts`; generation prompts and limitations are in `docs/finish-comparison.md`.
+The finish comparison now uses full, independently sourced gloss/satin photos with compare and individual-view controls. The source photographs have different colors and viewpoints; they are never spliced into a false before/after comparison. See `docs/car-image-sources.md` for provenance.
 
 Desktop feature pinning falls back to native horizontal scrolling on touch/short viewports. Reduced motion disables nonessential animations. The preloader has both a timeout and a skip control. Browser media autoplay policies still apply to the silent native video; a manual play control is always available.
 
@@ -623,11 +623,13 @@ export function ScrollExperience() {
 'use client';
 
 /* oxlint-disable next/no-img-element -- Original optimized local artwork. */
+/* oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Native overflow rail needs focus for keyboard scrolling. */
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Sparkles, ShieldCheck, Layers3 } from 'lucide-react';
 import { assetPath } from '@/lib/asset-path';
+import { carAssets } from '@/lib/car-assets';
 import { MotionHeading } from './scroll-experience';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -710,10 +712,9 @@ export function FeatureJourney() {
           </span>
           <MotionHeading lines={['حضور لا يتغيّر.']} />
         </div>
-        <div
+        <section
           className="feature-window"
           tabIndex={0}
-          role="region"
           aria-label="بطاقات مزايا الحماية"
         >
           <div className="feature-rail" ref={railRef}>
@@ -735,13 +736,13 @@ export function FeatureJourney() {
               </article>
             ))}
           </div>
-        </div>
+        </section>
         <div className="feature-car-layer">
           <img
-            src={assetPath('/images/products/titanium.webp')}
-            alt="سيارة رمادية في تصوير استوديو، مع الحفاظ على لون الطلاء الأصلي"
-            width={1536}
-            height={1024}
+            src={assetPath(carAssets.satin.src)}
+            alt={carAssets.satin.alt}
+            width={carAssets.satin.width}
+            height={carAssets.satin.height}
             loading="lazy"
           />
         </div>
@@ -755,23 +756,34 @@ export function FeatureJourney() {
     </section>
   );
 }
-
 ```
 
 
-## 4. Glowing comparison slider
+## 4. Original-photo finish gallery
 
 
 ### lib/comparison-assets.ts
 
 ```tsx
-/** Illustrative finish variants, not before/after installation photographs. */
-export const comparisonAssets = {
-  gloss: '/images/comparison/graphite-gloss.webp',
-  matte: '/images/comparison/graphite-matte.webp',
-  width: 1536,
-  height: 1024,
-};
+import { carAssets, glossCar } from './car-assets';
+
+/** Independent source photos: show whole images, never imply registered before/after. */
+export const comparisonAssets = [
+  {
+    id: 'gloss',
+    label: 'اللامع',
+    en: 'GLOSS',
+    description: 'انعكاسات واضحة وحضور لافت.',
+    car: glossCar,
+  },
+  {
+    id: 'satin',
+    label: 'الساتان المطفي',
+    en: 'SATIN',
+    description: 'انعكاسات ناعمة تُبرز خطوط السيارة.',
+    car: carAssets.satin,
+  },
+] as const;
 ```
 
 
@@ -780,21 +792,22 @@ export const comparisonAssets = {
 ```tsx
 'use client';
 
-/* oxlint-disable next/no-img-element -- Matched local finish artwork, no filters or transforms. */
-import { useState, type CSSProperties } from 'react';
-import { ChevronsLeftRight } from 'lucide-react';
+/* oxlint-disable next/no-img-element -- Original library cutouts with native shadows. */
+import { useState } from 'react';
+import { ArrowUpLeft } from 'lucide-react';
 import { assetPath } from '@/lib/asset-path';
 import { comparisonAssets } from '@/lib/comparison-assets';
 import { MotionHeading } from './scroll-experience';
 
-const presets = [
-  { value: 100, label: 'لامع بالكامل' },
-  { value: 50, label: 'قارن الاثنين' },
-  { value: 0, label: 'مطفي بالكامل' },
+type View = 'all' | 'gloss' | 'satin';
+const views: { id: View; label: string }[] = [
+  { id: 'all', label: 'قارن الإطلالتين' },
+  { id: 'gloss', label: 'شاهد اللامع' },
+  { id: 'satin', label: 'شاهد الساتان' },
 ];
 
 export function PaintComparison() {
-  const [position, setPosition] = useState(50);
+  const [view, setView] = useState<View>('all');
   const [failed, setFailed] = useState(false);
   return (
     <section
@@ -808,94 +821,85 @@ export function PaintComparison() {
           إطلالة تناسب شخصيتك
         </p>
         <span className="english-label" dir="ltr">
-          ONE CAR. TWO FINISHES.
+          FIND YOUR FINISH.
         </span>
       </div>
       <div className="comparison-heading">
         <div id="comparison-title">
-          <MotionHeading lines={['لامع أم مطفي؟']} />
+          <MotionHeading lines={['لامع أم ساتان؟']} />
         </div>
         <p>
-          حرّك الفاصل بين انعكاسات اللامع وهدوء المطفي، واختر الإطلالة الأقرب لك.
+          قارن بين الانعكاسات اللامعة وهدوء الساتان، وشاهد كل إطلالة بتفاصيلها.
         </p>
       </div>
+      <fieldset
+        className="comparison-presets"
+        aria-label="اختيار عرض التشطيبات"
+      >
+        {views.map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={view === id}
+            aria-controls="finish-gallery"
+            onClick={() => setView(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </fieldset>
       {failed ? (
         <div className="comparison-unavailable">
           <p role="alert">
-            تعذّر تحميل صور المقارنة. أعد تحميل الصفحة للمحاولة مرة أخرى.
+            تعذّر تحميل الصور. أعد تحميل الصفحة للمحاولة مرة أخرى.
           </p>
-          <a href="#finishes">استكشف التشطيبات والمنتجات</a>
+          <a href="#finishes">استكشف المنتجات</a>
         </div>
       ) : (
         <div
-          className="comparison-stage"
-          data-cursor="drag"
-          style={{ '--comparison': `${position}%` } as CSSProperties}
-          dir="ltr"
+          id="finish-gallery"
+          className={`finish-gallery ${view !== 'all' ? 'finish-gallery--single' : ''}`}
         >
-          <img
-            src={assetPath(comparisonAssets.gloss)}
-            alt="تصوّر لسيارة جرافيت بتشطيب لامع وانعكاسات واضحة"
-            width={comparisonAssets.width}
-            height={comparisonAssets.height}
-            loading="lazy"
-            decoding="async"
-            onError={() => setFailed(true)}
-          />
-          <div className="comparison-after">
-            <img
-              src={assetPath(comparisonAssets.matte)}
-              alt="تصوّر لنفس السيارة بتشطيب مطفي وانعكاسات ناعمة"
-              width={comparisonAssets.width}
-              height={comparisonAssets.height}
-              loading="lazy"
-              decoding="async"
-              onError={() => setFailed(true)}
-            />
-          </div>
-          <div className="comparison-labels" aria-hidden="true">
-            <span dir="rtl" data-visible={position > 0}>
-              لامع <bdi>GLOSS</bdi>
-            </span>
-            <span dir="rtl" data-visible={position < 100}>
-              مطفي <bdi>MATTE</bdi>
-            </span>
-          </div>
-          <div className="comparison-divider" aria-hidden="true">
-            <span>
-              <ChevronsLeftRight size={22} />
-            </span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={position}
-            aria-label="مقارنة التشطيب اللامع والمطفي"
-            aria-valuetext={`لامع ${position}%، مطفي ${100 - position}%`}
-            aria-describedby="comparison-note"
-            onChange={(event) => setPosition(Number(event.target.value))}
-          />
+          {comparisonAssets
+            .filter((item) => view === 'all' || item.id === view)
+            .map(({ id, label, en, description, car }) => (
+              <figure className="finish-reference" key={id}>
+                <div className="finish-reference-top">
+                  <span dir="ltr">{en}</span>
+                  <span dir="ltr">{car.model}</span>
+                </div>
+                <div className="finish-reference-image">
+                  <img
+                    src={assetPath(car.src)}
+                    alt={car.alt}
+                    width={car.width}
+                    height={car.height}
+                    loading="lazy"
+                    decoding="async"
+                    onError={() => setFailed(true)}
+                  />
+                </div>
+                <figcaption>
+                  <h3>{label}</h3>
+                  <p>{description}</p>
+                </figcaption>
+              </figure>
+            ))}
         </div>
       )}
       <div className="comparison-bottom">
-        <span id="comparison-note">
-          تصوّر بصري للتشطيبات؛ يختلف المظهر حسب لون الطلاء والإضاءة.
+        <span>
+          صور مرجعية بإضاءات وألوان مختلفة؛ لتحديد التشطيب المناسب، اطلب معاينة
+          عيّنة الفيلم.
         </span>
-        {!failed && (
-          <fieldset className="comparison-presets" aria-label="عرض التشطيبات">
-            {presets.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setPosition(value)}
-                aria-pressed={position === value}
-              >
-                {label}
-              </button>
-            ))}
-          </fieldset>
-        )}
+        <a
+          className="text-link"
+          href="https://wa.me/19406194638"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          اسأل عن التشطيبات <ArrowUpLeft size={18} aria-hidden="true" />
+        </a>
       </div>
     </section>
   );
@@ -1093,6 +1097,7 @@ import {
   HoverLabel,
 } from './scroll-experience';
 import { assetPath } from '@/lib/asset-path';
+import { carAssets } from '@/lib/car-assets';
 import { InstallationVideo } from './installation-video';
 import { CreativeRuntime } from './creative-runtime';
 import { FeatureJourney } from './feature-journey';
@@ -1202,16 +1207,6 @@ const finishes = [
   },
 ];
 
-const carDescriptions: Record<string, string> = {
-  crystal: 'كوبيه رياضية بيضاء بتشطيب لامع — تصوير CGI توضيحي لـ PS CRYSTAL',
-  titanium:
-    'سيدان رياضية جرافيت بتشطيب معدني لامع — تصوير CGI توضيحي لـ PS TITANIUM',
-  satin: 'سيارة كروس أوفر بلون شامبين ساتان — تصوير CGI توضيحي لـ PS SATIN',
-  stealth: 'سيارة دفع رباعي سوداء بتشطيب مطفي — تصوير CGI توضيحي لـ PS STEALTH',
-  color: 'سيارة سوبركار خضراء بلون زمردي لامع — تصوير CGI توضيحي لـ PS COLOR',
-  vision: 'سيدان فاخرة فضية — تصوير CGI توضيحي لـ PS VISION',
-};
-
 function Logo() {
   return (
     <span className="brand-mark">
@@ -1235,7 +1230,7 @@ export default function Home() {
     const next = finishes[activeIndex + 1];
     if (next) {
       const image = new Image();
-      image.src = assetPath(`/images/products/${next.id}.webp`);
+      image.src = assetPath(carAssets[next.id].src);
     }
   }, [activeIndex]);
 
@@ -1324,10 +1319,10 @@ export default function Home() {
             <div className="hero-studio-light" aria-hidden="true" />
             <img
               className="hero-image"
-              src={assetPath('/images/products/crystal.webp')}
-              alt="كوبيه فاخرة بيضاء بتصوير CGI احترافي وإضاءة ستوديو ناعمة"
-              width="1536"
-              height="1024"
+              src={assetPath(carAssets.crystal.src)}
+              alt={carAssets.crystal.alt}
+              width={carAssets.crystal.width}
+              height={carAssets.crystal.height}
               fetchPriority="high"
             />
             <div className="hero-shade" />
@@ -1493,17 +1488,17 @@ export default function Home() {
                       </span>
                       <img
                         className="product-car-image"
-                        src={assetPath(`/images/products/${finish.id}.webp`)}
-                        alt={carDescriptions[finish.id]}
-                        width={1536}
-                        height={1024}
+                        src={assetPath(carAssets[finish.id].src)}
+                        alt={carAssets[finish.id].alt}
+                        width={carAssets[finish.id].width}
+                        height={carAssets[finish.id].height}
                         loading={finish.id === 'crystal' ? 'eager' : 'lazy'}
                       />
                       <span className="product-image-name" dir="ltr">
                         {finish.name}
                       </span>
                       <span className="image-note">
-                        تصوّر CGI • يختلف المظهر حسب الفيلم والطلاء
+                        صورة مرجعية • يختلف التشطيب حسب الفيلم والطلاء
                       </span>
                     </div>
                     <div className="finish-info">
@@ -1654,6 +1649,12 @@ export default function Home() {
         <a className="footer-email" href="mailto:info@preciousshield.com">
           info@preciousshield.com
         </a>
+        <a
+          className="media-credit-link"
+          href={assetPath('/image-credits.html')}
+        >
+          مصادر الصور
+        </a>
         <span className="copyright">
           © {new Date().getFullYear()} Precious Shield. جميع الحقوق محفوظة.
         </span>
@@ -1786,25 +1787,28 @@ html.lenis { scroll-behavior: auto !important; }
 .comparison-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin: 40px 0; }
 .comparison-heading h2 { font-size: clamp(32px, 4vw, 58px); }
 .comparison-heading > p { color: #686862; line-height: 1.8; max-width: 32ch; }
-.comparison-stage { position: relative; width: 100%; aspect-ratio: 3 / 2; background: #e5e5df; border: 1px solid #c9c9c1; overflow: hidden; isolation: isolate; }
-.comparison-stage > img, .comparison-after, .comparison-after img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.comparison-stage img { object-fit: contain; filter: none; transform: none; }
-.comparison-after { clip-path: inset(0 0 0 var(--comparison)); }
-.comparison-labels { position: absolute; inset: 24px 24px auto; display: flex; justify-content: space-between; pointer-events: none; font-size: 11px; letter-spacing: .1em; }
-.comparison-labels > span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #efefeb; color: #41413c; font-family: PSArabic, Arial, sans-serif; font-size: 14px; letter-spacing: 0; }
-.comparison-labels bdi { font-family: Syne, Arial, sans-serif; font-size: 11px; letter-spacing: .08em; }
-.comparison-labels > span[data-visible="false"] { visibility: hidden; }
-.comparison-divider { position: absolute; top: 0; bottom: 0; left: var(--comparison); width: 2px; transform: translateX(-50%); background: #f1c0ba; box-shadow: 0 0 8px #f1463b, 0 0 22px #d5292480; pointer-events: none; }
-.comparison-divider > span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border: 1px solid #ef948a; border-radius: 50%; background: #171719; color: #fff; display: grid; place-items: center; box-shadow: 0 0 25px #d5292466; }
-.comparison-stage input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; direction: ltr; touch-action: pan-y; }
-.comparison-stage:focus-within { outline: 2px solid #bc3029; outline-offset: 6px; }
-.comparison-bottom { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-top: 18px; color: #64645d; font-size: 12px; line-height: 1.8; }
-.comparison-presets { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; direction: ltr; }
-.comparison-presets button { min-width: 44px; min-height: 44px; padding: 8px 14px; border: 1px solid #aaa; font-size: 14px; white-space: nowrap; }
+.comparison-presets { border: 0; padding: 0; margin: 0 0 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+.comparison-presets button { min-height: 44px; padding: 10px 20px; border: 1px solid #aaa; font-size: 14px; transition: background 180ms, border-color 180ms; }
+.comparison-presets button[aria-pressed='true'] { border-color: #222; background: #222; color: #f5f5ef; }
+.comparison-presets button:focus-visible { outline: 2px solid #c5362c; outline-offset: 4px; }
+.finish-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.finish-gallery--single { grid-template-columns: minmax(0, 1fr); max-width: 1120px; margin-inline: auto; }
+.finish-reference { min-width: 0; margin: 0; background: #e7e7e1; border: 1px solid #d2d2cb; padding: 24px; }
+.finish-reference-top { display: flex; justify-content: space-between; gap: 12px; font-family: Syne, Arial, sans-serif; font-size: 12px; color: #676760; letter-spacing: .06em; }
+.finish-reference-image { aspect-ratio: 16 / 9; display: grid; place-items: center; margin-block: 24px; }
+.finish-reference-image img { width: 100%; height: 100%; object-fit: contain; filter: none; }
+.finish-reference figcaption { border-top: 1px solid #cbcbc4; padding-top: 20px; }
+.finish-reference h3 { font-size: clamp(24px, 2.4vw, 36px); font-weight: 400; margin-bottom: 8px; }
+.finish-reference figcaption p { color: #676760; font-size: 15px; line-height: 1.8; }
+.comparison-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 24px; color: #64645d; font-size: 13px; line-height: 1.8; }
 .comparison-unavailable { padding: 60px 24px; background: #e5e5df; text-align: center; }
-.comparison-unavailable a { display: inline-block; min-height: 44px; margin-top: 16px; text-decoration: underline; text-underline-offset: 5px; }
-.comparison-presets button[aria-pressed='true'] { border-color: #c5362c; color: #a32a22; }
-@media (max-width: 760px) { .comparison-heading, .comparison-bottom { align-items: start; flex-direction: column; } .comparison-stage { aspect-ratio: 3 / 2; } .comparison-labels { inset: 12px 12px auto; font-size: 9px; } }
+.comparison-unavailable a { display: inline-block; min-height: 44px; margin-top: 16px; text-decoration: underline; }
+@media (max-width: 760px) {
+  .comparison-heading, .comparison-bottom { align-items: start; flex-direction: column; }
+  .finish-gallery { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .finish-reference { padding: 18px; }
+  .comparison-presets button { flex: 1; padding-inline: 10px; }
+}
 @media (prefers-reduced-motion: reduce) { .cinematic-loader { display: none; } .creative-cursor { display: none; } .feature-rail { transform: none !important; } }
 /* Keep the original automotive paint free of the legacy hero shade. */
 .hero .hero-shade { display: none !important; }
@@ -2199,4 +2203,102 @@ export function InstallationVideo() {
   }
 }
 
+```
+
+
+## 8. Sourced car asset registry
+
+```ts
+/** Downloaded library cutouts. Original colors, proportions, alpha and shadows retained. */
+type CarAsset = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  model: string;
+  source: string;
+  author: string;
+};
+export const carAssets: Record<string, CarAsset> = {
+  crystal: {
+    src: '/images/cars/huracan-white.webp',
+    width: 1594,
+    height: 776,
+    alt: 'لامبورغيني هوراكان بيضاء، صورة مفرغة بالظل الأصلي',
+    model: 'Lamborghini Huracán',
+    source:
+      'https://purepng.com/photo/5189/transportation-cars-white-lamborghini-huracan-car',
+    author: 'datsvs',
+  },
+  titanium: {
+    src: '/images/cars/panamera-black.webp',
+    width: 1620,
+    height: 906,
+    alt: 'بورشه باناميرا سوداء، صورة مفرغة بالظل الأصلي',
+    model: 'Porsche Panamera',
+    source:
+      'https://purepng.com/photo/5180/transportation-cars-black-porsche-panamera-car',
+    author: 'datsvs',
+  },
+  satin: {
+    src: '/images/cars/amg-silver.webp',
+    width: 2208,
+    height: 1000,
+    alt: 'مرسيدس AMG GT فضية بتشطيب ساتان، صورة مفرغة بالظل الأصلي',
+    model: 'Mercedes-AMG GT',
+    source:
+      'https://purepng.com/photo/28999/transportation-cars-mercedes-amg-sport-superfast',
+    author: 'hamza786',
+  },
+  stealth: {
+    src: '/images/cars/range-rover-black.webp',
+    width: 1650,
+    height: 1019,
+    alt: 'رينج روفر سبورت سوداء، صورة مفرغة بالظل الأصلي',
+    model: 'Range Rover Sport',
+    source:
+      'https://purepng.com/photo/29077/transportation-cars-land-rover-range-rover-sport',
+    author: 'sohailawan',
+  },
+  color: {
+    src: '/images/cars/huracan-green.webp',
+    width: 2000,
+    height: 764,
+    alt: 'لامبورغيني هوراكان خضراء، صورة مفرغة بالظل الأصلي',
+    model: 'Lamborghini Huracán',
+    source:
+      'https://purepng.com/photo/5214/transportation-cars-lamborghini-huracan-green-car',
+    author: 'datsvs',
+  },
+  vision: {
+    src: '/images/cars/bentley-bronze.webp',
+    width: 1900,
+    height: 1044,
+    alt: 'بنتلي كونتيننتال بلون برونزي، صورة مفرغة بالظل الأصلي',
+    model: 'Bentley Continental GT',
+    source: 'https://purepng.com/photo/16319/bentley',
+    author: 'PNGStock',
+  },
+};
+export const glossCar: CarAsset = {
+  src: '/images/cars/amg-red.webp',
+  width: 1874,
+  height: 888,
+  alt: 'مرسيدس AMG GT حمراء بتشطيب لامع، صورة مفرغة بالظل الأصلي',
+  model: 'Mercedes-AMG GT',
+  source:
+    'https://purepng.com/photo/5104/transportation-cars-mercedes-amg-gt-red-car',
+  author: 'datsvs',
+};
+```
+
+```css
+/* Native source cutouts: fit the whole car and keep the photograph's own shadow. */
+.feature-car-layer::before { display: none; }
+.hero .hero-image { left: 0; width: 72%; }
+.product-car-stage .product-car-image { padding: 7% 3%; }
+.media-credit-link { font-size: 13px; color: #a6a6a6; min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
+@media (min-width: 1700px) { .hero .hero-image { width: 72%; left: 0; } }
+@media (max-width: 1100px) and (min-width: 761px) { .hero .hero-image { width: 75%; left: 0; } }
+@media (max-width: 760px) { .hero .hero-image { width: 100%; left: 0; } }
 ```

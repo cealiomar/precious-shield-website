@@ -10,6 +10,7 @@ import {
   HoverLabel,
 } from './scroll-experience';
 import { assetPath } from '@/lib/asset-path';
+import { carAssets } from '@/lib/car-assets';
 import { InstallationVideo } from './installation-video';
 import { CreativeRuntime } from './creative-runtime';
 import { FeatureJourney } from './feature-journey';
@@ -119,16 +120,6 @@ const finishes = [
   },
 ];
 
-const carDescriptions: Record<string, string> = {
-  crystal: 'كوبيه رياضية بيضاء بتشطيب لامع — تصوير CGI توضيحي لـ PS CRYSTAL',
-  titanium:
-    'سيدان رياضية جرافيت بتشطيب معدني لامع — تصوير CGI توضيحي لـ PS TITANIUM',
-  satin: 'سيارة كروس أوفر بلون شامبين ساتان — تصوير CGI توضيحي لـ PS SATIN',
-  stealth: 'سيارة دفع رباعي سوداء بتشطيب مطفي — تصوير CGI توضيحي لـ PS STEALTH',
-  color: 'سيارة سوبركار خضراء بلون زمردي لامع — تصوير CGI توضيحي لـ PS COLOR',
-  vision: 'سيدان فاخرة فضية — تصوير CGI توضيحي لـ PS VISION',
-};
-
 function Logo() {
   return (
     <span className="brand-mark">
@@ -152,7 +143,7 @@ export default function Home() {
     const next = finishes[activeIndex + 1];
     if (next) {
       const image = new Image();
-      image.src = assetPath(`/images/products/${next.id}.webp`);
+      image.src = assetPath(carAssets[next.id].src);
     }
   }, [activeIndex]);
 
@@ -241,10 +232,10 @@ export default function Home() {
             <div className="hero-studio-light" aria-hidden="true" />
             <img
               className="hero-image"
-              src={assetPath('/images/products/crystal.webp')}
-              alt="كوبيه فاخرة بيضاء بتصوير CGI احترافي وإضاءة ستوديو ناعمة"
-              width="1536"
-              height="1024"
+              src={assetPath(carAssets.crystal.src)}
+              alt={carAssets.crystal.alt}
+              width={carAssets.crystal.width}
+              height={carAssets.crystal.height}
               fetchPriority="high"
             />
             <div className="hero-shade" />
@@ -410,17 +401,17 @@ export default function Home() {
                       </span>
                       <img
                         className="product-car-image"
-                        src={assetPath(`/images/products/${finish.id}.webp`)}
-                        alt={carDescriptions[finish.id]}
-                        width={1536}
-                        height={1024}
+                        src={assetPath(carAssets[finish.id].src)}
+                        alt={carAssets[finish.id].alt}
+                        width={carAssets[finish.id].width}
+                        height={carAssets[finish.id].height}
                         loading={finish.id === 'crystal' ? 'eager' : 'lazy'}
                       />
                       <span className="product-image-name" dir="ltr">
                         {finish.name}
                       </span>
                       <span className="image-note">
-                        تصوّر CGI • يختلف المظهر حسب الفيلم والطلاء
+                        صورة مرجعية • يختلف التشطيب حسب الفيلم والطلاء
                       </span>
                     </div>
                     <div className="finish-info">
@@ -570,6 +561,12 @@ export default function Home() {
         </a>
         <a className="footer-email" href="mailto:info@preciousshield.com">
           info@preciousshield.com
+        </a>
+        <a
+          className="media-credit-link"
+          href={assetPath('/image-credits.html')}
+        >
+          مصادر الصور
         </a>
         <span className="copyright">
           © {new Date().getFullYear()} Precious Shield. جميع الحقوق محفوظة.

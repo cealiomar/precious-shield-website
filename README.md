@@ -3,7 +3,7 @@
 Arabic, right-to-left automotive paint protection website for Precious Shield (PS).
 
 - Cinematic scroll scenes, progressive heading reveals, and hover interactions.
-- Six product presentations with distinct transparent CGI vehicle images.
+- Six product presentations with sourced transparent vehicle images and original shadows.
 - Responsive layouts and reduced-motion support.
 - WhatsApp inquiries and links to the existing warranty verification service.
 
@@ -36,7 +36,7 @@ The full starter lint command also checks bundled UI components and may report p
 - `app/installation-video.tsx` — self-hosted silent background film, viewport-aware playback, pause control, and source attribution.
 - `lib/scroll-progress.ts` — progress calculations for scroll scenes.
 - `app/use-product-scroll.ts` — six sticky product chapters, reverse scroll, and direct tab navigation. Small/short screens and reduced-motion users retain ordinary tabs.
-- `public/images/products/` — the six transparent vehicle images.
+- `public/images/cars/` — sourced cutouts; attribution and provenance in `docs/car-image-sources.md`.
 - `public/fonts/` — locally hosted Arabic fonts.
 - `.openai/hosting.json` — existing Sites project association; contains no credentials.
 
@@ -48,7 +48,7 @@ The live website is available at [cealiomar.github.io/precious-shield-website](h
 
 GitHub Actions builds and publishes the site on every push to `main`. Run `npm run build:pages` to generate the static GitHub Pages output in `dist/client/`, with the repository prefix applied to assets. The regular `npm run build` command retains the existing Worker-backed Sites build in `dist/`.
 
-Vehicle artwork is illustrative CGI. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.
+Vehicle images are sourced library cutouts, used as references, not actual PS installation results. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.
 
 The installation section plays a ten-second, silent Full HD excerpt of the selected Areté Auto Salon film from local site assets. A solid foreground panel keeps the process text legible without tinting or filtering the footage. Desktop uses a full-width background; mobile preserves the 16:9 shot above the copy. Playback pauses offscreen and when the page is hidden. Reduced-motion and data-saving visitors get manual playback, and a pause/play control remains available. See [media provenance and edit details](docs/media-sources.md). No new Higgsfield assets are used.
 
@@ -58,7 +58,7 @@ The product scene uses native scrolling with a sticky stage: each of the six pro
 
 - `app/creative-runtime.tsx`: fail-open 0–100 loader, curtain exit, GSAP/Lenis integration, word reveals, fine-pointer cursor, and magnetic primary CTAs. Lenis is disabled for reduced motion; native touch scrolling and controls remain usable.
 - `app/feature-journey.tsx`: ScrollTrigger pins the feature scene on suitable desktop viewports. Glass cards pass behind an unchanged, stationary vehicle cutout. Touch and short screens use a native horizontal card rail.
-- `app/paint-comparison.tsx`: glossy/matte finish comparison with two distinct concept images of the same graphite car, native keyboard/touch range control, a glowing divider, and full-gloss/split/full-matte presets. `lib/comparison-assets.ts` holds the image paths. These are labelled finish illustrations, not before/after installation evidence. See [asset details and prompts](docs/finish-comparison.md).
+- `app/paint-comparison.tsx`: whole-photo gloss/satin gallery using two independent source photos, with compare and individual-view buttons. The original paint, camera geometry, transparency and shadows are preserved. `lib/car-assets.ts` records source URLs and contributors.
 - Product navigation is a single horizontally scrollable row at all widths. The active tab is centered without scrolling the page. Direct product selection uses the active Lenis instance to avoid scroll position rebound.
 - Syne fonts are hosted locally with their OFL license. Vehicle files remain unchanged; the legacy hero shade is disabled.
 

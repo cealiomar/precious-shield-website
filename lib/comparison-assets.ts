@@ -1,7 +1,19 @@
-/** Illustrative finish variants, not before/after installation photographs. */
-export const comparisonAssets = {
-  gloss: '/images/comparison/graphite-gloss.webp',
-  matte: '/images/comparison/graphite-matte.webp',
-  width: 1536,
-  height: 1024,
-};
+import { carAssets, glossCar } from './car-assets';
+
+/** Independent source photos: show whole images, never imply registered before/after. */
+export const comparisonAssets = [
+  {
+    id: 'gloss',
+    label: 'اللامع',
+    en: 'GLOSS',
+    description: 'انعكاسات واضحة وحضور لافت.',
+    car: glossCar,
+  },
+  {
+    id: 'satin',
+    label: 'الساتان المطفي',
+    en: 'SATIN',
+    description: 'انعكاسات ناعمة تُبرز خطوط السيارة.',
+    car: carAssets.satin,
+  },
+] as const;

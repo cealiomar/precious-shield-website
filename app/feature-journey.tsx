@@ -1,11 +1,13 @@
 'use client';
 
 /* oxlint-disable next/no-img-element -- Original optimized local artwork. */
+/* oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Native overflow rail needs focus for keyboard scrolling. */
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Sparkles, ShieldCheck, Layers3 } from 'lucide-react';
 import { assetPath } from '@/lib/asset-path';
+import { carAssets } from '@/lib/car-assets';
 import { MotionHeading } from './scroll-experience';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -88,10 +90,9 @@ export function FeatureJourney() {
           </span>
           <MotionHeading lines={['حضور لا يتغيّر.']} />
         </div>
-        <div
+        <section
           className="feature-window"
           tabIndex={0}
-          role="region"
           aria-label="بطاقات مزايا الحماية"
         >
           <div className="feature-rail" ref={railRef}>
@@ -113,13 +114,13 @@ export function FeatureJourney() {
               </article>
             ))}
           </div>
-        </div>
+        </section>
         <div className="feature-car-layer">
           <img
-            src={assetPath('/images/products/titanium.webp')}
-            alt="سيارة رمادية في تصوير استوديو، مع الحفاظ على لون الطلاء الأصلي"
-            width={1536}
-            height={1024}
+            src={assetPath(carAssets.satin.src)}
+            alt={carAssets.satin.alt}
+            width={carAssets.satin.width}
+            height={carAssets.satin.height}
             loading="lazy"
           />
         </div>
