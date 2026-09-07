@@ -698,6 +698,7 @@ export function FeatureJourney() {
   }, []);
   return (
     <section
+      id="technology"
       className="feature-journey"
       ref={sectionRef}
       aria-label="تقنيات حماية الطلاء"
@@ -1718,8 +1719,38 @@ html.lenis { scroll-behavior: auto !important; }
 .glass-feature > .english-label { color: #b2b2ad; font-size: 10px; letter-spacing: .13em; }
 .glass-feature h3 { font-size: clamp(24px, 2.3vw, 34px); font-weight: 400; margin: 8px 0 12px; }
 .glass-feature > p:last-child { color: #b8b8b3; font-size: 14px; line-height: 1.8; max-width: 36ch; }
-.feature-car-layer { position: relative; z-index: 2; width: min(850px, 88%); height: 340px; margin: -20px auto 0; pointer-events: none; }
-.feature-car-layer img { width: 100%; height: 100%; object-fit: contain; filter: none; transform: none; }
+.feature-car-layer {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+  width: min(1120px, 92%);
+  height: auto;
+  aspect-ratio: 1536 / 680;
+  margin: 28px auto 24px;
+  pointer-events: none;
+}
+/* A separate floor shadow anchors the unchanged cutout; no image filter. */
+.feature-car-layer::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: auto 6% -2%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(0 0 0 / 70%) 0%, rgb(0 0 0 / 32%) 42%, transparent 73%);
+}
+.feature-car-layer img {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  /* Center the original 3:2 canvas inside a frame fitted to its visible car. */
+  transform: translateY(-50%);
+  filter: none;
+}
 .feature-journey-footer { position: relative; z-index: 3; padding: 0 var(--page-pad); display: flex; align-items: center; justify-content: space-between; gap: 30px; color: #aaa; font-size: 12px; }
 .feature-journey-footer > div { width: min(260px, 35vw); height: 1px; background: #424242; }
 .feature-journey-footer > div > span { display: block; width: 100%; height: 100%; background: #e44940; transform-origin: left; transform: scaleX(var(--feature-progress, 0)); }
@@ -1727,9 +1758,18 @@ html.lenis { scroll-behavior: auto !important; }
 .feature-journey--pinned .feature-window { overflow: visible; }
 .feature-journey--pinned .feature-rail { padding-inline: calc(50vw - clamp(300px, 44vw, 540px) / 2); padding-top: 26px; }
 .feature-journey--pinned .glass-feature { min-height: 250px; padding-bottom: 56px; }
-.feature-journey--pinned .feature-car-layer { position: absolute; bottom: 44px; left: 50%; margin: 0; transform: translateX(-50%); height: 42%; max-height: 390px; }
+.feature-journey--pinned .feature-car-layer {
+  position: absolute;
+  bottom: 52px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  width: min(1120px, 88vw, calc((100svh - 510px) * 2.25));
+  height: auto;
+  max-height: none;
+}
 .feature-journey--pinned .feature-journey-footer { position: absolute; inset: auto 0 20px; }
-@media (max-width: 900px) { .feature-journey-stage { padding-top: 44px; } .feature-car-layer { height: 240px; } .glass-feature { width: 78vw; } }
+@media (max-width: 900px) { .feature-journey-stage { padding-top: 44px; } .feature-car-layer { width: 94%; height: auto; margin: 16px auto 28px; } .glass-feature { width: 78vw; } }
 
 .paint-comparison { background: #eeeee9; color: #1b1b19; }
 .comparison-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin: 40px 0; }
@@ -1756,9 +1796,14 @@ html.lenis { scroll-behavior: auto !important; }
 
 .feature-window:focus-visible { outline: 1px solid #e44940; outline-offset: -2px; }
 @media (min-width: 901px) and (max-height: 760px) {
-  .feature-journey--pinned .feature-car-layer { height: 26%; }
-  .feature-journey--pinned .glass-feature { min-height: 240px; padding: 22px; }
-  .feature-journey--pinned .glass-feature h3 { font-size: 25px; }
+  .feature-journey--pinned .feature-car-layer { width: min(1000px, 90vw, calc((100svh - 440px) * 2.25)); }
+  .feature-journey--pinned .feature-journey-stage { padding-top: 24px; }
+  .feature-journey--pinned .feature-journey-heading h2 { font-size: 32px; line-height: 1.3; margin-top: 12px; }
+  .feature-journey--pinned .feature-rail { padding-top: 16px; }
+  .feature-journey--pinned .glass-feature { min-height: 218px; padding: 22px; }
+  .feature-journey--pinned .glass-feature-top { margin-bottom: 12px; }
+  .feature-journey--pinned .glass-feature h3 { font-size: 25px; line-height: 1.35; }
+  .feature-journey--pinned .glass-feature > p:last-child { font-size: 13px; line-height: 1.6; }
 }
 
 ```

@@ -76,6 +76,7 @@ export function FeatureJourney() {
   }, []);
   return (
     <section
+      id="technology"
       className="feature-journey"
       ref={sectionRef}
       aria-label="تقنيات حماية الطلاء"
