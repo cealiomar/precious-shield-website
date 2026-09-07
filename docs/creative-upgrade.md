@@ -709,7 +709,12 @@ export function FeatureJourney() {
           </span>
           <MotionHeading lines={['حضور لا يتغيّر.']} />
         </div>
-        <div className="feature-window">
+        <div
+          className="feature-window"
+          tabIndex={0}
+          role="region"
+          aria-label="بطاقات مزايا الحماية"
+        >
           <div className="feature-rail" ref={railRef}>
             {features.map(({ number, en, title, body, Icon }) => (
               <article
@@ -1748,5 +1753,12 @@ html.lenis { scroll-behavior: auto !important; }
 @media (prefers-reduced-motion: reduce) { .cinematic-loader { display: none; } .creative-cursor { display: none; } .feature-rail { transform: none !important; } }
 /* Keep the original automotive paint free of the legacy hero shade. */
 .hero .hero-shade { display: none !important; }
+
+.feature-window:focus-visible { outline: 1px solid #e44940; outline-offset: -2px; }
+@media (min-width: 901px) and (max-height: 760px) {
+  .feature-journey--pinned .feature-car-layer { height: 26%; }
+  .feature-journey--pinned .glass-feature { min-height: 240px; padding: 22px; }
+  .feature-journey--pinned .glass-feature h3 { font-size: 25px; }
+}
 
 ```

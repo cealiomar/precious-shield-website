@@ -87,7 +87,12 @@ export function FeatureJourney() {
           </span>
           <MotionHeading lines={['حضور لا يتغيّر.']} />
         </div>
-        <div className="feature-window">
+        <div
+          className="feature-window"
+          tabIndex={0}
+          role="region"
+          aria-label="بطاقات مزايا الحماية"
+        >
           <div className="feature-rail" ref={railRef}>
             {features.map(({ number, en, title, body, Icon }) => (
               <article
