@@ -218,13 +218,14 @@ export default function Home() {
           aria-labelledby="hero-title"
         >
           <div className="hero">
+            <div className="hero-studio-light" aria-hidden="true" />
             <Image
               unoptimized
               className="hero-image"
-              src="/images/hero.png"
-              alt="سيارة رياضية جرافيت بطلاء لامع تحت إضاءة استوديو سينمائية"
-              width="1672"
-              height="941"
+              src="/images/products/crystal.webp"
+              alt="كوبيه فاخرة بيضاء بتصوير CGI احترافي وإضاءة ستوديو ناعمة"
+              width="1536"
+              height="1024"
               fetchPriority="high"
             />
             <div className="hero-shade" />

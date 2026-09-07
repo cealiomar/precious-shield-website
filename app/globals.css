@@ -2042,3 +2042,147 @@ footer .brand-mark {
 .product-car-stage .product-car-image {
   padding: 4% 3%;
 }
+
+/* Clean studio hero: the vehicle is a cutout with deliberate space for the headline. */
+.hero {
+  background: #090a0c;
+}
+.hero-studio-light {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background: radial-gradient(
+    ellipse at 26% 55%,
+    #292b30 0%,
+    #141518 35%,
+    #090a0c 67%
+  );
+}
+.hero .hero-image {
+  inset: auto auto 4% -7%;
+  width: 79%;
+  height: 83%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+  z-index: -2;
+}
+.hero .hero-shade {
+  z-index: -1;
+  background:
+    linear-gradient(
+      270deg,
+      #090a0c 0%,
+      #090a0ce0 23%,
+      #090a0c20 48%,
+      transparent 61%
+    ),
+    linear-gradient(0deg, #090a0ca0, transparent 20%);
+}
+.hero .hero-content {
+  max-width: 700px;
+}
+.hero h1 {
+  font-weight: 400;
+  font-size: clamp(64px, 6.1vw, 102px);
+  line-height: 1.25;
+  letter-spacing: -3px;
+}
+.hero .hero-copy {
+  color: #b9b9bb;
+}
+.scroll-motion .hero-image {
+  transform-origin: 42% 58%;
+}
+.scroll-pinned .hero-echo > span {
+  font-size: clamp(70px, 8.2vw, 144px);
+}
+.scroll-pinned .hero-shade:after {
+  background: linear-gradient(
+    270deg,
+    #090a0cea 15%,
+    #090a0c55 40%,
+    transparent 68%
+  );
+}
+@media (min-width: 1700px) {
+  .hero .hero-content {
+    max-width: 820px;
+  }
+  .hero .hero-image {
+    width: 77%;
+    left: -4%;
+  }
+}
+@media (min-width: 901px) and (max-height: 780px) {
+  .scroll-pinned .hero h1 {
+    font-size: 72px;
+  }
+  .hero .hero-image {
+    height: 89%;
+    bottom: -2%;
+  }
+  .hero .hero-content {
+    max-width: 640px;
+  }
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .hero .hero-content {
+    max-width: 590px;
+  }
+  .hero .hero-image {
+    width: 87%;
+    left: -14%;
+    height: 79%;
+  }
+  .hero h1 {
+    font-size: 68px;
+  }
+}
+@media (max-width: 760px) {
+  .hero {
+    min-height: 780px;
+  }
+  .hero-studio-light {
+    background: radial-gradient(
+      ellipse at 43% 67%,
+      #292b30 0%,
+      #151619 32%,
+      #090a0c 67%
+    );
+  }
+  .hero .hero-image {
+    inset: auto auto 64px -7%;
+    width: 114%;
+    height: 47%;
+    object-fit: contain;
+    object-position: center;
+  }
+  .hero .hero-shade {
+    background: linear-gradient(
+      180deg,
+      #090a0c 0%,
+      #090a0c70 37%,
+      transparent 53%,
+      transparent 87%,
+      #090a0c 100%
+    );
+  }
+  .hero .hero-content {
+    max-width: 100%;
+    padding-top: 121px;
+  }
+  .hero h1 {
+    font-size: clamp(52px, 10.5vw, 74px);
+    letter-spacing: -2px;
+  }
+  .hero .hero-copy {
+    font-size: 15px;
+  }
+  .scroll-motion .hero-image {
+    transform-origin: center 60%;
+  }
+  .hero-bottom {
+    bottom: 23px;
+  }
+}
