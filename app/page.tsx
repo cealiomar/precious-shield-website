@@ -10,6 +10,7 @@ import {
   HoverLabel,
 } from './scroll-experience';
 import { assetPath } from '@/lib/asset-path';
+import { InstallationVideo } from './installation-video';
 import {
   ArrowDown,
   ArrowDownLeft,
@@ -460,14 +461,8 @@ export default function Home() {
         </section>
         <section id="craft" data-chapter className="craft">
           <div className="craft-stage">
-            <div className="craft-photo">
-              <img
-                src={assetPath('/images/craft.png')}
-                alt="تركيب فيلم حماية شفاف بعناية على غطاء سيارة داكنة"
-                width="1672"
-                height="941"
-                loading="lazy"
-              />
+            <div className="craft-photo craft-photo--video">
+              <InstallationVideo />
               <div className="craft-photo-caption">
                 <span className="english-label" dir="ltr">
                   PRECISION IN EVERY DETAIL.

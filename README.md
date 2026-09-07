@@ -33,6 +33,7 @@ The full starter lint command also checks bundled UI components and may report p
 - `app/page.tsx` — page content, products, warranties, navigation, and contact links.
 - `app/globals.css` — visual design, responsive layout, and interaction styles.
 - `app/scroll-experience.tsx` — scroll effects and animated text components.
+- `app/installation-video.tsx` — silent installation video, viewport playback, manual pause and reduced-motion handling.
 - `lib/scroll-progress.ts` — progress calculations for scroll scenes.
 - `public/images/products/` — the six transparent vehicle images.
 - `public/fonts/` — locally hosted Arabic fonts.
@@ -47,3 +48,5 @@ The live website is available at [cealiomar.github.io/precious-shield-website](h
 GitHub Actions builds and publishes the site on every push to `main`. Run `npm run build:pages` to generate the static GitHub Pages output in `dist/client/`, with the repository prefix applied to assets. The regular `npm run build` command retains the existing Worker-backed Sites build in `dist/`.
 
 Vehicle artwork is illustrative CGI. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.
+
+The installation clip in `public/videos/ppf-installation.mp4` is an AI-generated illustrative animation derived from the existing `craft.png` artwork, not footage of an actual customer installation. It is presented without audio or CSS image filters. Playback pauses outside the viewport and when the document is hidden; reduced-motion and save-data preferences disable automatic playback. The original image remains as the poster and error fallback.
