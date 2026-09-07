@@ -1,5 +1,6 @@
 'use client';
 
+import { scrollPageTo } from '@/lib/smooth-scroll';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { productScrollIndex, productScrollOffset } from '@/lib/scroll-progress';
 
@@ -75,6 +76,22 @@ export function useProductScroll(count: number) {
     };
   }, [count]);
 
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const list =
+        stageRef.current?.querySelector<HTMLElement>('[role="tablist"]');
+      const tab = list?.querySelector<HTMLElement>('[data-active]');
+      if (!list || !tab) return;
+      const bounds = list.getBoundingClientRect();
+      const active = tab.getBoundingClientRect();
+      list.scrollBy({
+        left: active.left + active.width / 2 - bounds.left - bounds.width / 2,
+        behavior: 'instant',
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [activeIndex]);
+
   const selectProduct = useCallback(
     (index: number) => {
       setActiveIndex(index);
@@ -83,10 +100,7 @@ export function useProductScroll(count: number) {
       const start =
         window.scrollY + trackRef.current.getBoundingClientRect().top - top;
       // Move to the chosen product's scroll segment so the next scroll continues there.
-      window.scrollTo({
-        top: start + productScrollOffset(index, stride, count),
-        behavior: 'instant',
-      });
+      scrollPageTo(start + productScrollOffset(index, stride, count));
     },
     [count],
   );

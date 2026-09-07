@@ -11,15 +11,15 @@ import {
 } from './scroll-experience';
 import { assetPath } from '@/lib/asset-path';
 import { InstallationVideo } from './installation-video';
+import { CreativeRuntime } from './creative-runtime';
+import { FeatureJourney } from './feature-journey';
+import { PaintComparison } from './paint-comparison';
 import { useProductScroll } from './use-product-scroll';
 import {
   ArrowDown,
   ArrowDownLeft,
   ArrowUpLeft,
   ArrowUp,
-  ShieldCheck,
-  Sparkles,
-  Layers3,
   Menu,
   X,
 } from 'lucide-react';
@@ -159,6 +159,7 @@ export default function Home() {
   return (
     <>
       <ScrollExperience />
+      <CreativeRuntime />
       <a href="#main" className="skip-link">
         انتقل إلى المحتوى
       </a>
@@ -338,39 +339,8 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <div className="benefit-grid">
-            {[
-              {
-                Icon: ShieldCheck,
-                title: 'حماية للحياة اليومية',
-                body: 'طبقة إضافية بين طلاء سيارتك وآثار الطريق.',
-              },
-              {
-                Icon: Sparkles,
-                title: 'جمال التفاصيل الأصلية',
-                body: 'شفافية تترك اللون والخطوط تعبّر عن نفسها.',
-              },
-              {
-                Icon: Layers3,
-                title: 'عناية تبدأ من السطح',
-                body: 'التحضير الجيد ودقة التركيب جزء من النتيجة.',
-              },
-            ].map(({ Icon, title, body }, i) => (
-              <article
-                key={title}
-                className="reveal"
-                style={{ transitionDelay: `${i * 120}ms` }}
-              >
-                <div className="benefit-top">
-                  <Icon size={28} strokeWidth={1.2} />
-                  <span dir="ltr">0{i + 1}</span>
-                </div>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
-          </div>
         </section>
+        <FeatureJourney />
         <section id="finishes" data-chapter className="finishes section-pad">
           <div className="section-heading reveal">
             <p className="eyebrow">
@@ -496,6 +466,7 @@ export default function Home() {
             ضمانك وفعّله عبر سجل الضمان الرقمي.
           </p>
         </section>
+        <PaintComparison />
         <section id="craft" data-chapter className="craft">
           <div className="craft-stage">
             <div className="craft-photo craft-photo--video">
