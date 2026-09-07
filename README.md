@@ -42,8 +42,8 @@ The full starter lint command also checks bundled UI components and may report p
 
 React 19, TypeScript, Vinext/Vite, Tailwind CSS, Base UI components, and Cloudflare Workers.
 
-The production build is written to `dist/`. This is a Worker-backed application; the repository is the source code, not a GitHub Pages static export.
+The live website is available at [cealiomar.github.io/precious-shield-website](https://cealiomar.github.io/precious-shield-website/).
 
-The existing private site is available at [ps-protection-studio.cealiomar.chatgpt.site](https://ps-protection-studio.cealiomar.chatgpt.site/).
+GitHub Actions builds and publishes the site on every push to `main`. Run `npm run build:pages` to generate the static GitHub Pages output in `dist/client/`, with the repository prefix applied to assets. The regular `npm run build` command retains the existing Worker-backed Sites build in `dist/`.
 
 Vehicle artwork is illustrative CGI. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.

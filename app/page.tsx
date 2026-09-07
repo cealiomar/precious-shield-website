@@ -1,5 +1,7 @@
 'use client';
 
+/* oxlint-disable next/no-img-element -- Shared with the static GitHub Pages build; artwork is already optimized. */
+
 import { useState } from 'react';
 import {
   ScrollExperience,
@@ -7,7 +9,7 @@ import {
   MotionHeading,
   HoverLabel,
 } from './scroll-experience';
-import Image from 'next/image';
+import { assetPath } from '@/lib/asset-path';
 import {
   ArrowDown,
   ArrowDownLeft,
@@ -128,9 +130,8 @@ const carDescriptions: Record<string, string> = {
 function Logo() {
   return (
     <span className="brand-mark">
-      <Image
-        unoptimized
-        src="/images/ps-logo.png"
+      <img
+        src={assetPath('/images/ps-logo.png')}
         alt="PS"
         width="595"
         height="842"
@@ -224,10 +225,9 @@ export default function Home() {
         >
           <div className="hero">
             <div className="hero-studio-light" aria-hidden="true" />
-            <Image
-              unoptimized
+            <img
               className="hero-image"
-              src="/images/products/crystal.webp"
+              src={assetPath('/images/products/crystal.webp')}
               alt="كوبيه فاخرة بيضاء بتصوير CGI احترافي وإضاءة ستوديو ناعمة"
               width="1536"
               height="1024"
@@ -405,10 +405,9 @@ export default function Home() {
                   >
                     {finish.name.replace('PS ', '')}
                   </span>
-                  <Image
-                    unoptimized
+                  <img
                     className="product-car-image"
-                    src={`/images/products/${finish.id}.webp`}
+                    src={assetPath(`/images/products/${finish.id}.webp`)}
                     alt={carDescriptions[finish.id]}
                     width={1536}
                     height={1024}
@@ -462,9 +461,8 @@ export default function Home() {
         <section id="craft" data-chapter className="craft">
           <div className="craft-stage">
             <div className="craft-photo">
-              <Image
-                unoptimized
-                src="/images/craft.png"
+              <img
+                src={assetPath('/images/craft.png')}
                 alt="تركيب فيلم حماية شفاف بعناية على غطاء سيارة داكنة"
                 width="1672"
                 height="941"
