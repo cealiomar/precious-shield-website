@@ -58,7 +58,7 @@ The product scene uses native scrolling with a sticky stage: each of the six pro
 
 - `app/creative-runtime.tsx`: fail-open 0–100 loader, curtain exit, GSAP/Lenis integration, word reveals, fine-pointer cursor, and magnetic primary CTAs. Lenis is disabled for reduced motion; native touch scrolling and controls remain usable.
 - `app/feature-journey.tsx`: ScrollTrigger pins the feature scene on suitable desktop viewports. Glass cards pass behind an unchanged, stationary vehicle cutout. Touch and short screens use a native horizontal card rail.
-- `app/paint-comparison.tsx`: native keyboard/touch range control with a glowing divider, preset buttons, and two aligned image layers. `lib/comparison-assets.ts` holds configurable image paths. The current demo intentionally uses the same unaltered image twice and is labelled as a preview, because no aligned before/after pair was supplied. Set `authenticPair` only after replacing both paths with genuine registered photos.
+- `app/paint-comparison.tsx`: glossy/matte finish comparison with two distinct concept images of the same graphite car, native keyboard/touch range control, a glowing divider, and full-gloss/split/full-matte presets. `lib/comparison-assets.ts` holds the image paths. These are labelled finish illustrations, not before/after installation evidence. See [asset details and prompts](docs/finish-comparison.md).
 - Product navigation is a single horizontally scrollable row at all widths. The active tab is centered without scrolling the page. Direct product selection uses the active Lenis instance to avoid scroll position rebound.
 - Syne fonts are hosted locally with their OFL license. Vehicle files remain unchanged; the legacy hero shade is disabled.
 

@@ -1,6 +1,7 @@
-/** Replace both paths together with an aligned, same-camera real photo pair. */
+/** Illustrative finish variants, not before/after installation photographs. */
 export const comparisonAssets = {
-  before: '/images/products/crystal.webp',
-  after: '/images/products/crystal.webp',
-  authenticPair: false,
+  gloss: '/images/comparison/graphite-gloss.webp',
+  matte: '/images/comparison/graphite-matte.webp',
+  width: 1536,
+  height: 1024,
 };

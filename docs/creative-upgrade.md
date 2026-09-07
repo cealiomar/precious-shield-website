@@ -7,7 +7,7 @@ npm ci
 npm run build:pages
 ```
 
-The comparison component is fully interactive, but uses the same untouched original image on both sides until a registered before/after photo pair is supplied. Configure both paths together in `lib/comparison-assets.ts`, then set `authenticPair: true`. Do not emulate scratches or gloss with filters, overlays, or a different car image.
+The comparison now uses two distinct glossy/matte concept images of the same graphite car. The native range exposes the glossy left side and matte right side, with three labelled presets. It is described as a finish visualization, not a before/after protection result. Asset paths are in `lib/comparison-assets.ts`; generation prompts and limitations are in `docs/finish-comparison.md`.
 
 Desktop feature pinning falls back to native horizontal scrolling on touch/short viewports. Reduced motion disables nonessential animations. The preloader has both a timeout and a skip control. Browser media autoplay policies still apply to the silent native video; a manual play control is always available.
 
@@ -765,13 +765,13 @@ export function FeatureJourney() {
 ### lib/comparison-assets.ts
 
 ```tsx
-/** Replace both paths together with an aligned, same-camera real photo pair. */
+/** Illustrative finish variants, not before/after installation photographs. */
 export const comparisonAssets = {
-  before: '/images/products/crystal.webp',
-  after: '/images/products/crystal.webp',
-  authenticPair: false,
+  gloss: '/images/comparison/graphite-gloss.webp',
+  matte: '/images/comparison/graphite-matte.webp',
+  width: 1536,
+  height: 1024,
 };
-
 ```
 
 
@@ -780,114 +780,126 @@ export const comparisonAssets = {
 ```tsx
 'use client';
 
-/* oxlint-disable next/no-img-element -- Paired images must retain original pixels and registration. */
-import { useRef, useState, type CSSProperties } from 'react';
+/* oxlint-disable next/no-img-element -- Matched local finish artwork, no filters or transforms. */
+import { useState, type CSSProperties } from 'react';
 import { ChevronsLeftRight } from 'lucide-react';
 import { assetPath } from '@/lib/asset-path';
 import { comparisonAssets } from '@/lib/comparison-assets';
 import { MotionHeading } from './scroll-experience';
 
+const presets = [
+  { value: 100, label: 'لامع بالكامل' },
+  { value: 50, label: 'قارن الاثنين' },
+  { value: 0, label: 'مطفي بالكامل' },
+];
+
 export function PaintComparison() {
   const [position, setPosition] = useState(50);
   const [failed, setFailed] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const authentic = comparisonAssets.authenticPair && !failed;
   return (
     <section
+      id="compare"
       className="paint-comparison section-pad"
       aria-labelledby="comparison-title"
     >
       <div className="section-heading">
         <p className="eyebrow">
           <span className="red-line" />
-          التفاصيل تصنع الفارق
+          إطلالة تناسب شخصيتك
         </p>
         <span className="english-label" dir="ltr">
-          A CLOSER LOOK
+          ONE CAR. TWO FINISHES.
         </span>
       </div>
       <div className="comparison-heading">
         <div id="comparison-title">
-          <MotionHeading lines={['الفرق في التفاصيل.']} />
+          <MotionHeading lines={['لامع أم مطفي؟']} />
         </div>
         <p>
-          {authentic
-            ? 'حرّك الفاصل وشاهد السطح قبل الحماية وبعدها.'
-            : 'جرّب تحريك الفاصل لاستكشاف تجربة المقارنة.'}
+          حرّك الفاصل بين انعكاسات اللامع وهدوء المطفي، واختر الإطلالة الأقرب لك.
         </p>
       </div>
-      <div
-        className="comparison-stage"
-        data-cursor="drag"
-        style={{ '--comparison': `${position}%` } as CSSProperties}
-        dir="ltr"
-      >
-        <img
-          src={assetPath(comparisonAssets.before)}
-          alt={
-            authentic
-              ? 'سطح الطلاء قبل تركيب الحماية'
-              : 'صورة السيارة الأصلية لمعاينة السلايدر'
-          }
-          width={1536}
-          height={1024}
-          loading="lazy"
-          onError={() => setFailed(true)}
-        />
-        <div className="comparison-after">
+      {failed ? (
+        <div className="comparison-unavailable">
+          <p role="alert">
+            تعذّر تحميل صور المقارنة. أعد تحميل الصفحة للمحاولة مرة أخرى.
+          </p>
+          <a href="#finishes">استكشف التشطيبات والمنتجات</a>
+        </div>
+      ) : (
+        <div
+          className="comparison-stage"
+          data-cursor="drag"
+          style={{ '--comparison': `${position}%` } as CSSProperties}
+          dir="ltr"
+        >
           <img
-            src={assetPath(comparisonAssets.after)}
-            alt={authentic ? 'نفس سطح الطلاء بعد تركيب الحماية' : ''}
-            width={1536}
-            height={1024}
+            src={assetPath(comparisonAssets.gloss)}
+            alt="تصوّر لسيارة جرافيت بتشطيب لامع وانعكاسات واضحة"
+            width={comparisonAssets.width}
+            height={comparisonAssets.height}
             loading="lazy"
+            decoding="async"
             onError={() => setFailed(true)}
           />
+          <div className="comparison-after">
+            <img
+              src={assetPath(comparisonAssets.matte)}
+              alt="تصوّر لنفس السيارة بتشطيب مطفي وانعكاسات ناعمة"
+              width={comparisonAssets.width}
+              height={comparisonAssets.height}
+              loading="lazy"
+              decoding="async"
+              onError={() => setFailed(true)}
+            />
+          </div>
+          <div className="comparison-labels" aria-hidden="true">
+            <span dir="rtl" data-visible={position > 0}>
+              لامع <bdi>GLOSS</bdi>
+            </span>
+            <span dir="rtl" data-visible={position < 100}>
+              مطفي <bdi>MATTE</bdi>
+            </span>
+          </div>
+          <div className="comparison-divider" aria-hidden="true">
+            <span>
+              <ChevronsLeftRight size={22} />
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={position}
+            aria-label="مقارنة التشطيب اللامع والمطفي"
+            aria-valuetext={`لامع ${position}%، مطفي ${100 - position}%`}
+            aria-describedby="comparison-note"
+            onChange={(event) => setPosition(Number(event.target.value))}
+          />
         </div>
-        <div className="comparison-labels" aria-hidden="true">
-          <span>{authentic ? 'BEFORE PPF' : 'ORIGINAL'}</span>
-          <span>{authentic ? 'AFTER PPF' : 'PREVIEW'}</span>
-        </div>
-        <div className="comparison-divider" aria-hidden="true">
-          <span>
-            <ChevronsLeftRight size={22} />
-          </span>
-        </div>
-        <input
-          ref={inputRef}
-          type="range"
-          min={0}
-          max={100}
-          value={position}
-          aria-label="موضع فاصل مقارنة الصور"
-          aria-valuetext={`${position}%`}
-          onChange={(event) => setPosition(Number(event.target.value))}
-        />
-      </div>
+      )}
       <div className="comparison-bottom">
-        <span>
-          {authentic
-            ? 'نفس السيارة. نفس الزاوية. قبل الحماية وبعدها.'
-            : 'معاينة تفاعلية بنفس الصورة الأصلية؛ صور قبل وبعد الفعلية ستُضاف لاحقًا.'}
+        <span id="comparison-note">
+          تصوّر بصري للتشطيبات؛ يختلف المظهر حسب لون الطلاء والإضاءة.
         </span>
-        <div className="comparison-presets">
-          {[25, 50, 75].map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setPosition(value)}
-              aria-label={`تحريك الفاصل إلى ${value}%`}
-              aria-pressed={position === value}
-            >
-              {value}%
-            </button>
-          ))}
-        </div>
+        {!failed && (
+          <fieldset className="comparison-presets" aria-label="عرض التشطيبات">
+            {presets.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setPosition(value)}
+                aria-pressed={position === value}
+              >
+                {label}
+              </button>
+            ))}
+          </fieldset>
+        )}
       </div>
     </section>
   );
 }
-
 ```
 
 
@@ -1772,21 +1784,25 @@ html.lenis { scroll-behavior: auto !important; }
 .comparison-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin: 40px 0; }
 .comparison-heading h2 { font-size: clamp(32px, 4vw, 58px); }
 .comparison-heading > p { color: #686862; line-height: 1.8; max-width: 32ch; }
-.comparison-stage { position: relative; width: 100%; aspect-ratio: 16 / 8; background: #e5e5df; border: 1px solid #c9c9c1; overflow: hidden; isolation: isolate; }
+.comparison-stage { position: relative; width: 100%; aspect-ratio: 3 / 2; background: #e5e5df; border: 1px solid #c9c9c1; overflow: hidden; isolation: isolate; }
 .comparison-stage > img, .comparison-after, .comparison-after img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .comparison-stage img { object-fit: contain; filter: none; transform: none; }
 .comparison-after { clip-path: inset(0 0 0 var(--comparison)); }
 .comparison-labels { position: absolute; inset: 24px 24px auto; display: flex; justify-content: space-between; pointer-events: none; font-size: 11px; letter-spacing: .1em; }
-.comparison-labels > span { padding: 8px 12px; background: #efefeb; color: #41413c; }
+.comparison-labels > span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #efefeb; color: #41413c; font-family: PSArabic, Arial, sans-serif; font-size: 14px; letter-spacing: 0; }
+.comparison-labels bdi { font-family: Syne, Arial, sans-serif; font-size: 11px; letter-spacing: .08em; }
+.comparison-labels > span[data-visible="false"] { visibility: hidden; }
 .comparison-divider { position: absolute; top: 0; bottom: 0; left: var(--comparison); width: 2px; transform: translateX(-50%); background: #f1c0ba; box-shadow: 0 0 8px #f1463b, 0 0 22px #d5292480; pointer-events: none; }
 .comparison-divider > span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border: 1px solid #ef948a; border-radius: 50%; background: #171719; color: #fff; display: grid; place-items: center; box-shadow: 0 0 25px #d5292466; }
 .comparison-stage input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; direction: ltr; touch-action: pan-y; }
 .comparison-stage:focus-within { outline: 2px solid #bc3029; outline-offset: 6px; }
 .comparison-bottom { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-top: 18px; color: #64645d; font-size: 12px; line-height: 1.8; }
-.comparison-presets { display: flex; gap: 8px; direction: ltr; }
-.comparison-presets button { min-width: 44px; min-height: 44px; border: 1px solid #aaa; }
+.comparison-presets { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; direction: ltr; }
+.comparison-presets button { min-width: 44px; min-height: 44px; padding: 8px 14px; border: 1px solid #aaa; font-size: 14px; white-space: nowrap; }
+.comparison-unavailable { padding: 60px 24px; background: #e5e5df; text-align: center; }
+.comparison-unavailable a { display: inline-block; min-height: 44px; margin-top: 16px; text-decoration: underline; text-underline-offset: 5px; }
 .comparison-presets button[aria-pressed='true'] { border-color: #c5362c; color: #a32a22; }
-@media (max-width: 760px) { .comparison-heading, .comparison-bottom { align-items: start; flex-direction: column; } .comparison-stage { aspect-ratio: 1; } .comparison-labels { inset: 12px 12px auto; font-size: 9px; } }
+@media (max-width: 760px) { .comparison-heading, .comparison-bottom { align-items: start; flex-direction: column; } .comparison-stage { aspect-ratio: 3 / 2; } .comparison-labels { inset: 12px 12px auto; font-size: 9px; } }
 @media (prefers-reduced-motion: reduce) { .cinematic-loader { display: none; } .creative-cursor { display: none; } .feature-rail { transform: none !important; } }
 /* Keep the original automotive paint free of the legacy hero shade. */
 .hero .hero-shade { display: none !important; }
