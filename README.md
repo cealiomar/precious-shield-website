@@ -33,7 +33,7 @@ The full starter lint command also checks bundled UI components and may report p
 - `app/page.tsx` — page content, products, warranties, navigation, and contact links.
 - `app/globals.css` — visual design, responsive layout, and interaction styles.
 - `app/scroll-experience.tsx` — scroll effects and animated text components.
-- `app/installation-video.tsx` — viewport-triggered, muted YouTube autoplay with native controls and source attribution.
+- `app/installation-video.tsx` — self-hosted silent background film, viewport-aware playback, pause control, and source attribution.
 - `lib/scroll-progress.ts` — progress calculations for scroll scenes.
 - `app/use-product-scroll.ts` — six sticky product chapters, reverse scroll, and direct tab navigation. Small/short screens and reduced-motion users retain ordinary tabs.
 - `public/images/products/` — the six transparent vehicle images.
@@ -50,7 +50,7 @@ GitHub Actions builds and publishes the site on every push to `main`. Run `npm r
 
 Vehicle artwork is illustrative CGI. Product names and warranty durations reflect the supplied Precious Shield information. The contact and warranty links point to the brand's existing services.
 
-The installation section embeds [Areté Auto Salon’s Porsche GT3 film](https://www.youtube.com/watch?v=IQqFJy0QhR4) through YouTube’s privacy-enhanced player, starting at the installation footage (1:10). The publisher advertises the original in 4K; YouTube selects playback quality based on the viewer’s device and connection. Native controls and fullscreen remain available. The player mounts as it enters the viewport and requests muted autoplay with looping. It unmounts offscreen or when the page is hidden. Reduced-motion users get manual playback, and browser autoplay restrictions may still require pressing play. The footage is credited as an external illustration, not a Precious Shield customer installation. No video is downloaded, rehosted, filtered, stretched, or cropped. A direct YouTube link remains available if embedding is blocked. The previous generated MP4 has been removed.
+The installation section plays a ten-second, silent Full HD excerpt of the selected Areté Auto Salon film from local site assets. A solid foreground panel keeps the process text legible without tinting or filtering the footage. Desktop uses a full-width background; mobile preserves the 16:9 shot above the copy. Playback pauses offscreen and when the page is hidden. Reduced-motion and data-saving visitors get manual playback, and a pause/play control remains available. See [media provenance and edit details](docs/media-sources.md). No new Higgsfield assets are used.
 
 The product scene uses native scrolling with a sticky stage: each of the six products receives 80% of a viewport of scroll travel before the next appears. After PS VISION the stage releases. Direct tab selection also positions the scroll within that product’s segment, and a skip link allows bypassing the sequence. Pinning is enabled on desktop screens at least 650px high and mobile screens at least 740px high, with a normal tab layout for reduced motion and shorter viewports. Original vehicle artwork is unchanged.
 

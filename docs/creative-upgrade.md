@@ -9,7 +9,7 @@ npm run build:pages
 
 The comparison component is fully interactive, but uses the same untouched original image on both sides until a registered before/after photo pair is supplied. Configure both paths together in `lib/comparison-assets.ts`, then set `authenticPair: true`. Do not emulate scratches or gloss with filters, overlays, or a different car image.
 
-Desktop feature pinning falls back to native horizontal scrolling on touch/short viewports. Reduced motion disables nonessential animations. The preloader has both a timeout and a skip control. Browser media autoplay policies still apply to the existing muted YouTube film.
+Desktop feature pinning falls back to native horizontal scrolling on touch/short viewports. Reduced motion disables nonessential animations. The preloader has both a timeout and a skip control. Browser media autoplay policies still apply to the silent native video; a manual play control is always available.
 
 
 ## 1. Global setup, cinematic preloader and cursor
@@ -1538,11 +1538,9 @@ export default function Home() {
           </p>
         </section>
         <PaintComparison />
-        <section id="craft" data-chapter className="craft">
+        <section id="craft" data-chapter className="craft craft--film">
           <div className="craft-stage">
-            <div className="craft-photo craft-photo--video">
-              <InstallationVideo />
-            </div>
+            <InstallationVideo />
             <div className="craft-content section-pad">
               <div>
                 <p className="eyebrow">
@@ -1652,7 +1650,6 @@ export default function Home() {
     </>
   );
 }
-
 ```
 
 
@@ -1804,6 +1801,384 @@ html.lenis { scroll-behavior: auto !important; }
   .feature-journey--pinned .glass-feature-top { margin-bottom: 12px; }
   .feature-journey--pinned .glass-feature h3 { font-size: 25px; line-height: 1.35; }
   .feature-journey--pinned .glass-feature > p:last-child { font-size: 13px; line-height: 1.6; }
+}
+
+```
+
+
+## 7. Native installation background film
+
+The film is a short, credited third-party excerpt served from local assets. See `docs/media-sources.md` for provenance. Desktop copy uses a solid foreground panel; vehicle colors are not filtered. Mobile preserves the complete shot above the text. Playback responds to visibility, user pause, reduced motion, and data-saving preferences.
+
+### app/installation-video.tsx
+
+```tsx
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { Pause, Play, ArrowUpRight } from 'lucide-react';
+import { assetPath } from '@/lib/asset-path';
+
+// A short, silent excerpt. Provenance and edit details: docs/media-sources.md.
+const FILM = {
+  src: '/videos/installation-detail.mp4',
+  poster: '/images/installation-poster.webp',
+  source: 'https://www.youtube.com/watch?v=IQqFJy0QhR4&t=70s',
+};
+
+export function InstallationVideo() {
+  const figureRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const syncRef = useRef<() => void>(() => {});
+  const intentRef = useRef<'auto' | 'play' | 'pause'>('auto');
+  const [playing, setPlaying] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    const figure = figureRef.current;
+    const video = videoRef.current;
+    if (!figure || !video) return;
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const connection = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean };
+      }
+    ).connection;
+    let inView = false;
+    let disposed = false;
+    let request = 0;
+
+    const sync = () => {
+      const token = ++request;
+      const intent = intentRef.current;
+      const mayPlay =
+        inView &&
+        !document.hidden &&
+        intent !== 'pause' &&
+        (intent === 'play' || (!motion.matches && !connection?.saveData));
+      if (!mayPlay) {
+        video.pause();
+        return;
+      }
+      if (!video.getAttribute('src')) video.src = assetPath(FILM.src);
+      video.muted = true;
+      // Some browsers reject even muted autoplay; keep the poster and play button.
+      void video
+        .play()
+        .then(() => {
+          if (disposed || token !== request) {
+            if (
+              disposed ||
+              document.hidden ||
+              !inView ||
+              intentRef.current === 'pause' ||
+              (intentRef.current === 'auto' &&
+                (motion.matches || connection?.saveData))
+            )
+              video.pause();
+          }
+        })
+        .catch(() => {});
+    };
+    syncRef.current = sync;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0 },
+    );
+    observer.observe(figure);
+    const onMotionChange = () => {
+      intentRef.current = 'auto';
+      sync();
+    };
+    motion.addEventListener('change', onMotionChange);
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      disposed = true;
+      request++;
+      video.pause();
+      observer.disconnect();
+      motion.removeEventListener('change', onMotionChange);
+      document.removeEventListener('visibilitychange', sync);
+      syncRef.current = () => {};
+    };
+  }, []);
+
+  const togglePlayback = () => {
+    intentRef.current = playing ? 'pause' : 'play';
+    syncRef.current();
+  };
+
+  return (
+    <figure
+      className="installation-film"
+      ref={figureRef}
+      aria-label="لقطة توضيحية لتركيب فيلم حماية"
+    >
+      <video
+        ref={videoRef}
+        id="installation-background"
+        className="installation-film-video"
+        poster={assetPath(FILM.poster)}
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-hidden="true"
+        disablePictureInPicture
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onError={() => {
+          setFailed(true);
+          setPlaying(false);
+        }}
+      />
+      <div className="installation-film-heading">
+        <span className="english-label" dir="ltr">
+          THE ART OF PROTECTION
+        </span>
+        <span className="installation-film-quality" dir="ltr">
+          IN THE DETAILS
+        </span>
+      </div>
+      <figcaption className="installation-film-credit" dir="rtl">
+        <a href={FILM.source} target="_blank" rel="noopener noreferrer">
+          <span>
+            لقطة توضيحية · <bdi>Areté Auto Salon</bdi>
+          </span>
+          <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
+        {failed ? (
+          <output>تعذّر تشغيل الفيديو</output>
+        ) : (
+          <button
+            type="button"
+            onClick={togglePlayback}
+            aria-controls="installation-background"
+            aria-label={playing ? 'إيقاف الفيديو مؤقتًا' : 'تشغيل الفيديو'}
+          >
+            {playing ? (
+              <Pause size={16} aria-hidden="true" />
+            ) : (
+              <Play size={16} aria-hidden="true" />
+            )}
+            <span>{playing ? 'إيقاف الحركة' : 'تشغيل المشهد'}</span>
+          </button>
+        )}
+      </figcaption>
+    </figure>
+  );
+}
+```
+
+### Background layout styles
+
+```css
+/* Full-width installation film: untouched footage, solid independent copy panel. */
+.craft--film .craft-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 820px;
+  isolation: isolate;
+  background: #090909;
+}
+.craft--film .installation-film {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+.installation-film-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: none;
+}
+.installation-film-heading {
+  position: absolute;
+  z-index: 1;
+  inset: 105px var(--page-pad) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.installation-film-heading > span {
+  padding: 9px 13px;
+  background: #101112;
+  color: #efefec;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+}
+.installation-film-credit {
+  position: absolute;
+  z-index: 3;
+  bottom: 28px;
+  left: var(--page-pad);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: #eee;
+  font-size: 12px;
+}
+.installation-film-credit a,
+.installation-film-credit button,
+.installation-film-credit > output {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: #101112;
+  border: 1px solid #555;
+  border-radius: 2px;
+  transition: border-color 180ms ease;
+}
+.installation-film-credit a:hover,
+.installation-film-credit button:hover {
+  border-color: #ff574e;
+}
+.installation-film-credit a:focus-visible,
+.installation-film-credit button:focus-visible {
+  outline: 2px solid #ff574e;
+  outline-offset: 4px;
+}
+.craft--film .craft-content {
+  position: relative;
+  z-index: 2;
+  justify-self: end;
+  align-self: center;
+  width: min(480px, 39%);
+  margin: 172px var(--page-pad) 108px 0;
+  padding: 28px 32px;
+  background: #101112;
+  border: 1px solid #393a3b;
+}
+.craft--film .craft-content h2 {
+  font-size: clamp(36px, 3.4vw, 56px);
+  margin-top: 20px;
+  line-height: 1.2;
+}
+.craft--film .craft-lead {
+  color: #c0c0bc;
+  font-size: 14px;
+  margin-top: 16px;
+}
+.craft--film .steps {
+  margin-top: 22px;
+}
+.craft--film .steps li {
+  padding: 14px 0;
+  gap: 18px;
+}
+.craft--film .steps h3 {
+  font-size: 17px;
+}
+.craft--film .steps p {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.scroll-pinned .craft--film .craft-stage {
+  position: sticky;
+  min-height: 650px;
+}
+@media (min-width: 901px) and (max-height: 780px) {
+  .craft--film .installation-film-heading {
+    top: 90px;
+  }
+  .craft--film .craft-content {
+    width: min(450px, 42%);
+    margin-top: 136px;
+    margin-bottom: 75px;
+    padding: 20px 28px;
+  }
+  .craft--film .craft-content h2 {
+    font-size: 34px;
+    margin-top: 12px;
+  }
+  .craft--film .craft-lead {
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .craft--film .steps {
+    margin-top: 12px;
+  }
+  .craft--film .steps li {
+    padding: 10px 0;
+  }
+  .craft--film .steps p {
+    font-size: 12px;
+  }
+  .craft--film .installation-film-credit {
+    bottom: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .craft--film .craft-stage {
+    display: block;
+    min-height: 0;
+  }
+  .craft--film .installation-film {
+    position: relative;
+    padding-bottom: 80px;
+  }
+  .installation-film-video {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    object-fit: contain;
+  }
+  .craft--film .installation-film-heading {
+    top: 18px;
+    inset-inline: 18px;
+  }
+  .installation-film-heading > span {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 7px 9px;
+  }
+  .installation-film-quality {
+    display: none;
+  }
+  .craft--film .installation-film-credit {
+    bottom: 18px;
+    inset-inline: var(--page-pad);
+    justify-content: space-between;
+  }
+  .installation-film-credit a,
+  .installation-film-credit button {
+    font-size: 11px;
+    padding-inline: 10px;
+  }
+  .craft--film .craft-content {
+    width: auto;
+    margin: 0;
+    padding: 36px var(--page-pad) 48px;
+    border: 0;
+    border-top: 1px solid #393a3b;
+  }
+  .craft--film .craft-content h2 {
+    font-size: clamp(40px, 6vw, 56px);
+  }
+  .craft--film .craft-lead {
+    font-size: 16px;
+  }
+  .craft--film .steps p {
+    font-size: 14px;
+  }
+}
+@media (max-width: 370px) {
+  .craft--film .installation-film {
+    padding-bottom: 130px;
+  }
 }
 
 ```

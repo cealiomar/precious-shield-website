@@ -467,11 +467,9 @@ export default function Home() {
           </p>
         </section>
         <PaintComparison />
-        <section id="craft" data-chapter className="craft">
+        <section id="craft" data-chapter className="craft craft--film">
           <div className="craft-stage">
-            <div className="craft-photo craft-photo--video">
-              <InstallationVideo />
-            </div>
+            <InstallationVideo />
             <div className="craft-content section-pad">
               <div>
                 <p className="eyebrow">
