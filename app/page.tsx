@@ -2,7 +2,7 @@
 
 /* oxlint-disable next/no-img-element -- Shared with the static GitHub Pages build; artwork is already optimized. */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ScrollExperience,
   ScrollWords,
@@ -11,6 +11,7 @@ import {
 } from './scroll-experience';
 import { assetPath } from '@/lib/asset-path';
 import { InstallationVideo } from './installation-video';
+import { useProductScroll } from './use-product-scroll';
 import {
   ArrowDown,
   ArrowDownLeft,
@@ -143,6 +144,17 @@ function Logo() {
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { trackRef, stageRef, activeIndex, selectProduct } = useProductScroll(
+    finishes.length,
+  );
+
+  useEffect(() => {
+    const next = finishes[activeIndex + 1];
+    if (next) {
+      const image = new Image();
+      image.src = assetPath(`/images/products/${next.id}.webp`);
+    }
+  }, [activeIndex]);
 
   return (
     <>
@@ -377,83 +389,108 @@ export default function Home() {
               تعرّف على عائلة Precious Shield واكتشف اختيارك.
             </p>
           </div>
-          <Tabs defaultValue="crystal" className="finish-tabs reveal">
-            <TabsList
-              className="finish-tab-list"
-              aria-label="اختيار منتج Precious Shield"
-            >
-              {finishes.map((product) => (
-                <TabsTrigger key={product.id} value={product.id}>
-                  <span className={`finish-dot ${product.id}-dot`} />
-                  <span dir="ltr">{product.name}</span>
-                  <small>
-                    {product.warranty} {product.years}
-                  </small>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {finishes.map((finish) => (
-              <TabsContent
-                key={finish.id}
-                value={finish.id}
-                className="finish-panel"
+          <div className="product-scroll-track" ref={trackRef}>
+            <div className="product-scroll-stage" ref={stageRef}>
+              <Tabs
+                value={finishes[activeIndex].id}
+                onValueChange={(value) => {
+                  const index = finishes.findIndex(
+                    (product) => product.id === value,
+                  );
+                  if (index >= 0) selectProduct(index);
+                }}
+                className="finish-tabs"
               >
-                <div className="finish-image-wrap product-car-stage">
-                  <span
-                    className="product-stage-word"
-                    dir="ltr"
-                    aria-hidden="true"
-                  >
-                    {finish.name.replace('PS ', '')}
+                <TabsList
+                  className="finish-tab-list"
+                  aria-label="اختيار منتج Precious Shield"
+                >
+                  {finishes.map((product) => (
+                    <TabsTrigger key={product.id} value={product.id}>
+                      <span className={`finish-dot ${product.id}-dot`} />
+                      <span dir="ltr">{product.name}</span>
+                      <small>
+                        {product.warranty} {product.years}
+                      </small>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <div className="product-scroll-status">
+                  <span>اسكرول لاكتشاف المنتجات</span>
+                  <span dir="ltr">
+                    {String(activeIndex + 1).padStart(2, '0')} / 06
                   </span>
-                  <img
-                    className="product-car-image"
-                    src={assetPath(`/images/products/${finish.id}.webp`)}
-                    alt={carDescriptions[finish.id]}
-                    width={1536}
-                    height={1024}
-                    loading={finish.id === 'crystal' ? 'eager' : 'lazy'}
-                  />
-                  <span className="product-image-name" dir="ltr">
-                    {finish.name}
-                  </span>
-                  <span className="image-note">
-                    تصوّر CGI • يختلف المظهر حسب الفيلم والطلاء
-                  </span>
-                </div>
-                <div className="finish-info">
-                  <div className="product-meta">
-                    <p className="english-label red-text" dir="ltr">
-                      {finish.en}
-                    </p>
-                    <div className="warranty">
-                      <strong>{finish.warranty}</strong>
-                      <span>{finish.years}</span>
-                    </div>
-                  </div>
-                  <h3>{finish.title}</h3>
-                  <p>{finish.description}</p>
-                  <ul>
-                    {finish.tags.map((tag) => (
-                      <li key={tag}>
-                        <span />
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    className="text-link"
-                    href={`https://wa.me/19406194638?text=${encodeURIComponent('مرحبًا، أرغب في معرفة المزيد عن ' + finish.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <HoverLabel>استفسر عن {finish.name}</HoverLabel>{' '}
-                    <ArrowUpLeft size={18} />
+                  <a href="#craft">
+                    تخطّي المنتجات <ArrowDown size={14} aria-hidden="true" />
                   </a>
                 </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+                {finishes.map((finish) => (
+                  <TabsContent
+                    key={finish.id}
+                    value={finish.id}
+                    className="finish-panel"
+                  >
+                    <div className="finish-image-wrap product-car-stage">
+                      <span
+                        className="product-stage-word"
+                        dir="ltr"
+                        aria-hidden="true"
+                      >
+                        {finish.name.replace('PS ', '')}
+                      </span>
+                      <img
+                        className="product-car-image"
+                        src={assetPath(`/images/products/${finish.id}.webp`)}
+                        alt={carDescriptions[finish.id]}
+                        width={1536}
+                        height={1024}
+                        loading={finish.id === 'crystal' ? 'eager' : 'lazy'}
+                      />
+                      <span className="product-image-name" dir="ltr">
+                        {finish.name}
+                      </span>
+                      <span className="image-note">
+                        تصوّر CGI • يختلف المظهر حسب الفيلم والطلاء
+                      </span>
+                    </div>
+                    <div className="finish-info">
+                      <div className="product-meta">
+                        <p className="english-label red-text" dir="ltr">
+                          {finish.en}
+                        </p>
+                        <div className="warranty">
+                          <strong>{finish.warranty}</strong>
+                          <span>{finish.years}</span>
+                        </div>
+                      </div>
+                      <h3>{finish.title}</h3>
+                      <p>{finish.description}</p>
+                      <ul>
+                        {finish.tags.map((tag) => (
+                          <li key={tag}>
+                            <span />
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                      <a
+                        className="text-link"
+                        href={`https://wa.me/19406194638?text=${encodeURIComponent('مرحبًا، أرغب في معرفة المزيد عن ' + finish.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <HoverLabel>استفسر عن {finish.name}</HoverLabel>{' '}
+                        <ArrowUpLeft size={18} />
+                      </a>
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+              <div className="product-scroll-meter" aria-hidden="true">
+                <span />
+              </div>
+            </div>
+          </div>
           <p className="product-note">
             مدد الضمان حسب المنتج، وتخضع لشروط ضمان Precious Shield. تحقّق من
             ضمانك وفعّله عبر سجل الضمان الرقمي.

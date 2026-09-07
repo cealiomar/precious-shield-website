@@ -2739,3 +2739,121 @@ footer .brand-mark {
     transform: none !important;
   }
 }
+
+/* Products hold the viewport for six native-scroll chapters, then release. */
+.product-scroll-track { margin-top: 46px; }
+.product-scroll-stage { background: #efefeb; }
+.product-scroll-stage .finish-tabs { margin-top: 0; }
+.product-scroll-status, .product-scroll-meter { display: none; }
+.product-scroll-track[data-scroll-products='true'] {
+  height: calc(var(--product-stage-height) + var(--product-travel));
+}
+[data-scroll-products='true'] .product-scroll-stage {
+  position: sticky;
+  top: var(--product-pin-top);
+  height: var(--product-stage-height);
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+}
+[data-scroll-products='true'] .finish-tabs {
+  flex: 1;
+  min-height: 0;
+  gap: 12px !important;
+}
+[data-scroll-products='true'] .finish-tab-list { flex-shrink: 0; }
+[data-scroll-products='true'] .finish-tab-list [role='tab'] {
+  min-height: 68px;
+  padding-block: 12px !important;
+}
+[data-scroll-products='true'] .product-scroll-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #65655f;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.product-scroll-status a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  color: #333;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+[data-scroll-products='true'] .finish-panel:not([hidden]) {
+  min-height: 0;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 5%;
+}
+[data-scroll-products='true'] .product-car-stage {
+  height: 100%;
+  max-height: 100%;
+  aspect-ratio: auto;
+}
+[data-scroll-products='true'] .finish-info h3 {
+  font-size: clamp(24px, 2.5vw, 40px);
+  line-height: 1.4;
+  margin: 12px 0;
+}
+[data-scroll-products='true'] .finish-info > p:not(.english-label) {
+  font-size: 14px;
+  line-height: 1.8;
+}
+[data-scroll-products='true'] .finish-info ul { margin: 16px 0; }
+[data-scroll-products='true'] .product-scroll-meter {
+  display: block;
+  height: 2px;
+  background: #d4d4ce;
+  margin-top: 14px;
+  flex-shrink: 0;
+}
+.product-scroll-meter span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  transform: scaleX(var(--product-progress, 0));
+  transform-origin: right;
+}
+@media (max-width: 900px) {
+  [data-scroll-products='true'] .finish-tab-list {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+  [data-scroll-products='true'] .finish-tab-list [role='tab'] {
+    min-width: 0;
+    min-height: 48px;
+    padding: 7px 5px !important;
+    gap: 4px !important;
+  }
+  [data-scroll-products='true'] .finish-tab-list [role='tab'] small { font-size: 10px; }
+  [data-scroll-products='true'] .finish-tab-list [role='tab'] > span[dir='ltr'] { font-size: 10px; }
+  [data-scroll-products='true'] .finish-tab-list [role='tab']:nth-child(3n) { border-inline-end: 0 !important; }
+  [data-scroll-products='true'] .finish-tabs { gap: 6px !important; }
+  [data-scroll-products='true'] .finish-panel:not([hidden]) {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(130px, 1fr) auto;
+    gap: 10px !important;
+  }
+  [data-scroll-products='true'] .product-car-image { padding: 0 3%; }
+  [data-scroll-products='true'] .product-stage-word { font-size: 16vw; top: 6%; }
+  [data-scroll-products='true'] .product-image-name,
+  [data-scroll-products='true'] .image-note { font-size: 9px; }
+  [data-scroll-products='true'] .image-note { bottom: 2px; }
+  [data-scroll-products='true'] .finish-info h3 { font-size: 23px; margin: 7px 0; }
+  [data-scroll-products='true'] .finish-info > p:not(.english-label) { font-size: 12px; line-height: 1.7; }
+  [data-scroll-products='true'] .warranty strong { font-size: 32px; }
+  [data-scroll-products='true'] .finish-info ul { margin: 10px 0; gap: 8px; }
+  [data-scroll-products='true'] .finish-info li { font-size: 10px; }
+  [data-scroll-products='true'] .finish-info .text-link { min-height: 38px; font-size: 13px; }
+  [data-scroll-products='true'] .product-scroll-status { font-size: 10px; gap: 8px; }
+  [data-scroll-products='true'] .product-scroll-meter { margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-scroll-track { height: auto !important; }
+  .product-scroll-stage { position: static !important; height: auto !important; }
+}

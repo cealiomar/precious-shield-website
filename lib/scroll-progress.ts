@@ -28,3 +28,22 @@ export function wordProgress(
 ): number {
   return progressBetween(progress * (total + 2), index, index + 2);
 }
+
+/** Each product gets a full dwell segment, including the last before release. */
+export function productScrollIndex(
+  distance: number,
+  stride: number,
+  count: number,
+): number {
+  if (count < 1 || stride <= 0) return 0;
+  return Math.min(count - 1, Math.max(0, Math.floor(distance / stride)));
+}
+
+export function productScrollOffset(
+  index: number,
+  stride: number,
+  count: number,
+): number {
+  if (count < 1 || stride <= 0) return 0;
+  return (Math.min(count - 1, Math.max(0, index)) + 0.1) * stride;
+}
